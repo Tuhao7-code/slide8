@@ -1,104 +1,73 @@
 using System;
+using System.Text;
 
 class Node
 {
-    public int Data;
-    public Node Left, Right;
-    
+    public int Data { get; set; }
+    public int Count { get; set; }
+    public Node Left { get; set; }
+    public Node Right { get; set; }
+
     public Node(int data)
     {
-        Data = data;
-        Left = Right = null;
+        this.Data = data;
+        this.Count = 1;
+        this.Left = this.Right = null;
     }
 }
 
 class BinarySearchTree
 {
-  // Bài 2
-public int CountEdges()
-{
-    return CountNodes(Root) - 1;
-}
-
-private int CountNodes(Node root)
-{
-    if (root == null)
-        return 0;
-    return 1 + CountNodes(root.Left) + CountNodes(root.Right);
-}
-  
-    public Node Root;
-  
+    private Node root;
 
     public void Insert(int data)
     {
-        Root = InsertRec(Root, data);
+        root = InsertRec(root, data);
     }
-
 
     private Node InsertRec(Node root, int data)
     {
         if (root == null)
-        {
             return new Node(data);
-        }
 
         if (data < root.Data)
             root.Left = InsertRec(root.Left, data);
-        else
+        else if (data > root.Data)
             root.Right = InsertRec(root.Right, data);
+        else
+            root.Count++;
 
         return root;
     }
 
-    public void InOrderTraversal(Node root)
+    public void TraverseInOrder()
+    {
+        TraverseInOrderRec(root);
+    }
+
+    private void TraverseInOrderRec(Node root)
     {
         if (root != null)
         {
-            InOrderTraversal(root.Left);
-            Console.Write(root.Data + " ");
-            InOrderTraversal(root.Right);
+            TraverseInOrderRec(root.Left);
+            Console.WriteLine($"Giá trị: {root.Data}, Số lần xuất hiện: {root.Count}");
+            TraverseInOrderRec(root.Right);
         }
     }
 
-    public void CountOccurrences(Node root, int[] count)
+    // Hàm đếm số nút trong cây
+    private int CountNodes(Node root)
     {
-        if (root != null)
-        {
-            CountOccurrences(root.Left, count);
-            count[root.Data]++;
-            CountOccurrences(root.Right, count);
-        }
+        if (root == null)
+            return 0;
+        return 1 + CountNodes(root.Left) + CountNodes(root.Right);
     }
 
-}
-class Program
-{
-    static void Main()
+    // Hàm đếm số cạnh trong cây
+    public int CountEdges()
     {
-        BinarySearchTree bst = new BinarySearchTree();
-        Random rand = new Random();
-        int[] count = new int[10]; // Mảng đếm số lần xuất hiện của từng số từ 0-9
-
-        // Chèn 10.000 số ngẫu nhiên vào cây
-        for (int i = 0; i < 10000; i++)
-        {
-            int num = rand.Next(0, 10);
-            bst.Insert(num);
-        }
-
-        // In cây theo thứ tự LNR
-        Console.WriteLine("Duyệt cây theo thứ tự LNR:");
-        bst.InOrderTraversal(bst.Root);
-        Console.WriteLine();
-
-        // Đếm số lần xuất hiện
-        bst.CountOccurrences(bst.Root, count);
-        Console.WriteLine("\nSố lần xuất hiện của từng số:");
-        for (int i = 0; i < 10; i++)
-        {
-            Console.WriteLine($"Số {i}: {count[i]} lần");
-        }
+        int nodeCount = CountNodes(root);
+        return nodeCount > 0 ? nodeCount - 1 : 0;
     }
 }
 
@@ -106,30 +75,20 @@ class Program
 {
     static void Main()
     {
+        Console.OutputEncoding = Encoding.UTF8;
+
         BinarySearchTree bst = new BinarySearchTree();
-        Random rand = new Random();
-        int[] count = new int[10]
-          
+        Random random = new Random();
+
         for (int i = 0; i < 10000; i++)
         {
-            int num = rand.Next(0, 10);
-            bst.Insert(num);
+            bst.Insert(random.Next(0, 10));
         }
 
-        Console.WriteLine("Duyệt cây theo thứ tự LNR:");
-        bst.InOrderTraversal(bst.Root);
-        Console.WriteLine();
+        Console.WriteLine("Kết quả duyệt cây (Inorder Traversal):");
+        bst.TraverseInOrder();
 
-        bst.CountOccurrences(bst.Root, count);
-        Console.WriteLine("\nSố lần xuất hiện của từng số:");
-        for (int i = 0; i < 10; i++)
-        {
-            Console.WriteLine($"Số {i}: {count[i]} lần");
-        }
+        Console.WriteLine("------------------------------------------------------");
+        Console.WriteLine($"Số cạnh trên cây: {bst.CountEdges()}");
     }
 }
-
-
-
-
-
